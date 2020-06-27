@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue中的事件处理和表单绑定</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- prevent 是一种事件修饰符 它可以阻止绑定事件的发生 -->
+        <form action="/abc" @click.prevent>
+            <input type="submit">
+        </form>
+        <!-- self也是一种事件修饰符 它修饰的click事件会校验事件是否是冒泡上来的 如果是从子标签冒泡上来的则不响应 -->
+        <div @click.self="handleSelfClick">
+            nice to meet you!
+            <div>hello world</div>
+        </div>
+        <!-- stop修饰的click事件会终止事件的冒泡 父标签将不再收到事件 -->
+        <div @click="handleClick">
+            nice to meet you!
+            <div @click.stop="handleStopClick">hello 邮储</div>
+        </div>
+        <!-- once修饰的click事件再触发一次后就会解绑 -->
+        <div @click.once="handleOnceClick">
+            hello once click
+        </div>
+        <!-- capture修饰的click事件会在捕获阶段即触发 默认情况下事件会在冒泡时响应 -->
+        <div @click.capture="handleOuterClick">
+            <div @click.capture="handleInnerClick">hello capture</div>
+        </div>
+        <div @click="handleOuterClick">
+            <div @click="handleInnerClick">hello no capture</div>
+        </div>
+        <!-- .enter 只有enter触发keydown时才触发方法 -->
+        <div>
+            <input type="text" v-model.lazy="value" @keydown.enter="handleKeydownEnterClick">
+            {{value}}
+            <br>
+            <input type="checkbox" v-model="checkboxValue">
+            {{checkboxValue}}
+            <br>
+            <input type="radio" v-model="radioValue" value="test">
+            {{radioValue}}
+            <br>
+            <select v-model="selectValue">
+                <option disabled>--请选择--</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+            </select>
+            {{selectValue}}
+            <br>
+            <input type="text" v-model.number.lazy="numberValue">
+            {{numberValue}}
+            <br>
+            <input type="text" v-model.trim.lazy="trimValue">
+            {{trimValue}}
+        </div>
+    </div>
+
+    <script>
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                value: '',
+                checkboxValue:"",
+                radioValue:"",
+                selectValue:"",
+                numberValue:"",
+                trimValue:""
+            },
+            watch: {
+                numberValue: function() {
+                    console.log(typeof this.numberValue)
+                }
+            },
+            methods: {
+                setAddress: function() {
+                    this.$set(this.userInfo, "suzhou", "address")
+                    this.$set(this.list, 0, {id:"001",text:"byebye"})
+                },
+
+                handleClick: function() {
+                    // alert("handleClick")
+                    console.log("handleClick")
+                },
+
+                handleSelfClick: function() {
+                    alert("handleSelfClick")
+                },
+
+                handleStopClick: function() {
+                    alert("handleStopClick")
+                },
+
+                handleOnceClick: function() {
+                    alert("handleOnceClick")
+                },
+
+                handleOuterClick: function() {
+                    alert("handleOuterClick")
+                },
+
+                handleInnerClick: function() {
+                    alert("handleInnerClick")
+                },
+
+                handleKeydownEnterClick: function(e) {
+                    alert(e.target.value)
+                }
+            }
+
+        })
+    </script>
+
+</body>
+</html>

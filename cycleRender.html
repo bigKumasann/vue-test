@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue中的列表渲染</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div v-for="(item, index) in list" :key="item.id">
+            {{item.text}}--------{{index}}
+        </div>
+        <div v-for="(item, key, index) in userInfo">
+            {{item}}---{{key}}--{{index}}
+        </div>
+        <button v-on:click="setAddress">修改数据</button>
+        <form action="/abc" @click.prevent="handleClick">
+            <input type="submit">
+        </form>
+    </div>
+
+    <script>
+
+        
+        //push pop shift unshift splice sort reverse
+        var app = new Vue({
+            el: '#app',
+            
+            data: {
+                list: [
+                    {
+                        id: "001",
+                        text: "hello"
+                    },
+                    {
+                        id: "002",
+                        text: "wang"
+                    },
+                    {
+                        id: "003",
+                        text: "lei"
+                    }
+                ],
+                userInfo: {
+                    name: "wanglei",
+                    age: 29,
+                    gender: "male",
+                    salary: "secret"
+                }
+            },
+
+            methods: {
+                setAddress: function() {
+                    this.$set(this.userInfo, "suzhou", "address")
+                    this.$set(this.list, 0, {id:"001",text:"byebye"})
+                },
+
+                handleClick: function(e) {
+                    // e.preventDefault()
+                }
+            }
+
+        })
+    </script>
+
+</body>
+</html>

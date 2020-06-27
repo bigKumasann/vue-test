@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue实例生命周期函数</title>
+    <script src="./vue.js"></script>
+    <style>
+        .activated {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div v-text="firstName + ' ' + lastName"></div>
+        <div v-once>{{inputValue}}</div>
+        <div>{{fullName}}</div>
+        <div @click="handleDiv1Click" v-bind:class="{activated: isActivated}">Hello World</div>
+        <div @click="handleDiv2Click" :class="activated">Hello Wanglei</div>
+        <div @click="handleDiv3Click" :style="styleObj">Hello Shijiayu</div>
+        <div v-if="firstName === 'wang'">This is wanglei</div>
+        <div v-else-if="firstName === 'shi'">This is shijiayu</div>
+        <div v-else>Bye Bye</div>
+        <div v-show="show">{{fullName}}</div>
+
+        <div v-if="show">
+            邮箱：<input key="email">
+        </div>
+        <div v-else>
+            用户名：<input key="username">
+        </div>
+    </div>
+
+    <script>
+
+        
+
+        var app = new Vue({
+            el: '#app',
+            beforeCreate: function() {
+                console.log("before create")
+            },
+            created: function() {
+                console.log("created")
+            },
+            //model和view绑定之前, 渲染之前
+            beforeMount: function() {
+                console.log(this.$el);
+                console.log("beforeMount")
+            },
+            //model和view绑定之后, 渲染之后
+            mounted: function() {
+                console.log(this.$el);
+                console.log("mounted");
+                Object.freeze(this.data)
+            },
+            beforeUpdate: function() {
+                console.log("beforeUpdate")
+            },
+            updated: function() {
+                console.log("updated")
+            },
+            data: {
+                list: [],
+                inputValue:'hello world',
+                firstName:'wang',
+                lastName:'lei',
+                age: 29,
+                isActivated: false,
+                activated:'',
+                styleObj:{
+                    color: "red"
+                },
+                show: false
+            },
+            //计算属性
+            computed: {
+                fullName: {
+                    get: function() {
+                        console.log("计算了一次")
+                        return this.firstName + " " + this.lastName + " " + this.age
+                    },
+                    set: function(value) {
+                        var arr = value.split(" ")
+                        this.firstName = arr[0]
+                        this.lastName = arr[1]
+                        console.log(value)
+                    }
+                }
+            },
+            methods: {
+                handleDiv1Click: function() {
+                    this.isActivated = !this.isActivated
+                },
+                handleDiv2Click: function() {
+                    this.activated = this.activated.length > 0 ? "" : "activated"
+                },
+                handleDiv3Click: function() {
+                    this.styleObj.color = this.styleObj.color === "red" ? "black" : "red"
+                }
+            }
+
+        })
+    </script>
+
+</body>
+</html>

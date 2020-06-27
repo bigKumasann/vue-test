@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue实例生命周期函数</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div v-text="firstName + ' ' + lastName"></div>
+        <div v-once>{{inputValue}}</div>
+        <div>{{fullName}}</div>
+    </div>
+
+    <script>
+
+        
+
+        var app = new Vue({
+            el: '#app',
+            beforeCreate: function() {
+                console.log("before create")
+            },
+            created: function() {
+                console.log("created")
+            },
+            //model和view绑定之前, 渲染之前
+            beforeMount: function() {
+                console.log(this.$el);
+                console.log("beforeMount")
+            },
+            //model和view绑定之后, 渲染之后
+            mounted: function() {
+                console.log(this.$el);
+                console.log("mounted");
+                Object.freeze(this.data)
+            },
+            beforeUpdate: function() {
+                console.log("beforeUpdate")
+            },
+            updated: function() {
+                console.log("updated")
+            },
+            data: {
+                list: [],
+                inputValue:'hello world',
+                firstName:'wang',
+                lastName:'lei',
+                age: 29,
+                fullName:'wang lei'
+            },
+            //侦听器
+            watch: {
+                firstName: function() {
+                    console.log("计算了一次")
+                    this.fullName = this.firstName + " " + this.lastName
+                },
+                lastName: function() {
+                    console.log("计算了一次")
+                    this.fullName = this.firstName + " " + this.lastName
+                }
+            }
+            //方法
+            // methods: {
+            //     handleBtnClick: function() {
+            //         this.list.push(this.inputValue)
+            //         this.inputValue = ''
+            //     },
+                
+            //     handleItemDelete: function(index) {
+            //         this.list.splice(index, 1)
+            //     },
+
+            //     fullName: function() {
+            //         return this.firstName + " " + this.lastName
+            //     }
+            // },
+            // //计算属性
+            // computed: {
+            //     fullName: function() {
+            //         return this.firstName + " " + this.lastName + " " + this.age
+            //     }
+            // }
+
+        })
+    </script>
+
+</body>
+</html>

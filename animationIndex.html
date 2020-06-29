@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue中的CSS动画原理</title>
+    <script src="./vue.js"></script>
+    <script src="./velocity.js"></script>
+    <link rel="stylesheet" type="text/css" href="./animate.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 过渡动画 -->
+        <transition name='fade'>
+            <div v-if="show">hello world</div>
+        </transition>
+        <button @click="handleClick">切换</button>
+        <br>
+        <!-- keyframe动画 -->
+        <transition name='animate1'>
+            <div v-if="show1">hello world</div>
+        </transition>
+        <button @click="handleAnimate1Click">toggle</button>
+        <br>
+        <!-- 使用第三方提供的动画库 -->
+        <transition 
+            appear 
+            name='animate2' 
+            enter-active-class="animate__animated animate__swing" 
+            leave-active-class="animate__animated animate__shakeY"
+            appear-active-class="animate__animated animate__shakeX"
+        >
+            <div v-if="show2">hello world</div>
+        </transition>
+        <button @click="handleAnimate2Click">第三方动画</button>
+        <br>
+        <!-- 同时使用过渡和动画 混合动画中 如果动画时长不能确定时 可以通过type指定以哪种动画时长为准 也可以通过duration直接设置动画时长 -->
+        <!-- <transition 
+            appear 
+            type="transition"
+            :duration="{enter: 5000, leave: 10000}"
+            :duration="5000"
+            name='animate3' 
+            enter-active-class="animate__animated animate__swing animate3-enter-active" 
+            leave-active-class="animate__animated animate__shakeY animate3-leave-active"
+            appear-active-class="animate__animated animate__shakeX"
+        > -->
+        <transition 
+            appear 
+            name='animate3' 
+            enter-active-class="animate__animated animate__swing animate3-enter-active" 
+            leave-active-class="animate__animated animate__shakeY animate3-leave-active"
+            appear-active-class="animate__animated animate__shakeX"
+        >
+            <div v-if="show3">hello world</div>
+        </transition>
+        <button @click="handleAnimate3Click">混合动画</button>
+        <br>
+        <!-- js动画与velocity.js -->
+        <transition 
+            name='fade1'
+            @before-enter="handleFade1BeforeEnter"
+            @enter="handleFade1Enter"
+            @after-enter="handleFade1AfterEnter"
+        >
+            <div v-if="show4">Hello World</div>
+        </transition>
+        <button @click="handleClick1">js动画与velocity</button>
+        <br>
+        <!-- 多个元素或组件的过渡 -->
+        <transition name='fade2' mode="out-in">
+            <div v-if="show5" key="hello">hello world</div>
+            <div v-else key="bye">bye world</div>
+        </transition>
+        <button @click="handleClick2">多个元素的过渡</button>
+        <br>
+        <transition name='fade2' mode="out-in">
+            <component :is="componentName"></component>
+        </transition>
+        <button @click="handleClick3">多个组件的过渡</button>
+        <br>
+        <!-- 列表过渡 -->
+        <transition-group name="group1">
+            <div v-for="item of list" :key="item.id">
+                {{item.title}}
+            </div>
+        </transition-group>
+        
+        <button @click="handleBtnClick">Add</button>
+        <button @click="handleDeleteBtnClick">Delete</button>
+        <br>
+        <!-- 动画封装 -->
+        <fade :show="show6">
+            <div>hello world</div>
+        </fade>
+        <button @click="handleClick4">动画封装</button>
+    </div>
+
+    <script>
+
+        Vue.component('child-one', {
+            template: "<div>child-one</div>"
+        })
+
+        Vue.component('child-two', {
+            template: "<div>child-two</div>"
+        })
+
+        Vue.component('fade', {
+            props: ['show'],
+            template:`<transition name='fade'>
+                        <slot v-if="show"></slot>
+                    </transition>`
+        })
+        
+        var app = new Vue({
+            el: '#app',
+            data: {
+                show: true,
+                show1: true,
+                show2: true,
+                show3: true,
+                show4: true,
+                show5: true,
+                componentName: "child-one",
+                list: [],
+                show6: true
+            },
+            methods: {
+                handleClick: function() {
+                    this.show = !this.show
+                },
+
+                handleAnimate1Click: function() {
+                    this.show1 = !this.show1
+                },
+
+                handleAnimate2Click: function() {
+                    this.show2 = !this.show2
+                },
+
+                handleAnimate3Click: function() {
+                    this.show3 = !this.show3
+                },
+
+                handleClick1: function() {
+                    this.show4 = !this.show4
+                },
+
+                handleFade1BeforeEnter: function(el) {
+                    el.style.opacity = 0
+                },
+
+                handleFade1Enter: function(el, done) {
+                    Velocity(el, {opacity: 1}, {duration: 1000, complete: done})
+                },
+
+                handleFade1AfterEnter: function(el) {
+                    alert("js动画结束")
+                    console.log("js动画结束")
+                },
+
+                handleClick2: function() {
+                    this.show5 = !this.show5
+                },
+
+                handleClick3: function() {
+                    this.componentName = this.componentName === "child-one" ? "child-two" : "child-one"
+                },
+
+                handleBtnClick: function() {
+                    var count = 1
+                    if (this.list.length > 0) {
+                        var item = this.list[this.list.length - 1]
+                        count = item.id + 1
+                    }
+                    this.list.push({
+                        id: count,
+                        title: "hello wanglei ---"+count
+                    })
+                },
+
+                handleDeleteBtnClick: function() {
+                    this.list.pop()
+                },
+
+                handleClick4: function() {
+                    this.show6 = !this.show6
+                },
+            }
+        })
+    </script>
+
+    <style>
+
+        /* 列表过渡 */
+
+        .group1-enter, .group1-leave-to {
+            opacity: 0;
+        }
+
+        .group1-enter-active, .group1-leave-active {
+            transition: opacity 1s;
+        }
+
+        /* 多个元素或组件的过渡 */
+
+        .fade2-enter, .fade2-leave-to {
+            opacity: 0;
+        }
+
+        .fade2-enter-active, .fade2-leave-active {
+            transition: opacity 1s;
+        }
+
+        /* 混合动画 */
+        .animate3-enter, .animate3-leave-to {
+            opacity: 0;
+        }
+
+        .animate3-enter-active, .animate3-leave-active {
+            transition: opacity 1s;
+        }
+
+        /* keyframe动画 */
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.5);
+            }
+
+            100% {
+                transform: scale(1.0);
+            }
+        }
+
+        .animate1-enter-active {
+            transform-origin: left center;
+            animation: bounce-in 1s;
+        }
+
+        .animate1-leave-active {
+            transform-origin: left center;
+            animation: bounce-in 1s reverse;
+        }
+
+        /* 过渡动画 */
+
+        .fade-enter {
+            opacity: 0;
+        }
+
+        .fade-enter-active {
+            transition: opacity 1s;
+        }
+
+        .fade-leave-to {
+            opacity: 0;
+        }
+
+        .fade-leave-active {
+            transition: opacity 1s;
+        }
+    </style>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件参数校验与非Props特性</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <child :name="'施家玉,hello'"></child>
+    </div>
+
+    <script>
+
+        Vue.component("child", {
+            props: {
+                // 组件参数校验
+                content: [String, Number],
+                name: {
+                    type: String,
+                    required: false,
+                    default: "wanglei",
+                    validator: function(value) {
+                        return value.length > 5
+                    }
+                }
+            },
+            template: "<div>{{name}}</div>"
+        })
+
+        var counter = {
+
+            props: ["count"],
+
+            template: "<div @click='handleClick'>{{number}}</div>",
+
+            data: function() {
+                return {
+                    number: this.count
+                }
+            },
+
+            methods: {
+                handleClick: function() {
+                    // alert("click")
+                    this.number = this.number + 2
+                    // 子组件可以通过内置的$emit命令触发一个方法让父组件监听，可以传递若干个参数。
+                    this.$emit("change", 2, "test")
+                }
+            }
+        }
+        
+        var app = new Vue({
+            el: '#app',
+            data: {
+                total: 0
+            },
+            components: {
+                counter: counter
+            },
+            methods: {
+                // handleClick: function() {
+                //     // alert("click")
+                //     alert(this.$refs.hello.innerHTML)
+                // }
+                handleChange: function(step, msg) {
+                    // this.total = this.$refs.counter1.number + this.$refs.counter2.number
+                    this.total = this.total + step
+                    alert(msg)
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>

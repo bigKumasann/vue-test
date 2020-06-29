@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>给组件绑定原生事件</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 对于监听自定义组件的click事件 如果直接使用@click="handleClick"是无效的 因为click事件是一个原生事件 但是自定义组件却不是原生组件 此时需要在@click加上native标识 -->
+        <child :name="'施家玉,hello'" @click.native="handleClick"></child>
+    </div>
+
+    <script>
+
+        Vue.component("child", {
+            props: {
+                // 组件参数校验
+                content: [String, Number],
+                name: {
+                    type: String,
+                    required: false,
+                    default: "wanglei",
+                    validator: function(value) {
+                        return value.length > 5
+                    }
+                }
+            },
+            template: "<div>{{name}}</div>"
+        })
+        
+        var app = new Vue({
+            el: '#app',
+            methods: {
+                handleClick: function() {
+                    alert("click")
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>
